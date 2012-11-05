@@ -11,6 +11,7 @@ var Reveal = (function(){
 
 	var HORIZONTAL_SLIDES_SELECTOR = '.reveal .slides>section',
 		VERTICAL_SLIDES_SELECTOR = '.reveal .slides>section.present>section',
+    cached_vertical_slides = {},
 
 		// Configurations defaults, can be overridden at initialization time
 		config = {
@@ -641,7 +642,8 @@ var Reveal = (function(){
 
 		// Activate and transition to the new slide
 		indexh = updateSlides( HORIZONTAL_SLIDES_SELECTOR, h === undefined ? indexh : h );
-		indexv = updateSlides( VERTICAL_SLIDES_SELECTOR, v === undefined ? indexv : v );
+		indexv = updateSlides( VERTICAL_SLIDES_SELECTOR, v === undefined ? (cached_vertical_slides[indexh] || 0) : v );
+    cached_vertical_slides[indexh] = indexv;
 
 		// Apply the new state
 		stateLoop: for( var i = 0, len = state.length; i < len; i++ ) {
@@ -1017,14 +1019,14 @@ var Reveal = (function(){
 	function navigateLeft() {
 		// Prioritize hiding fragments
 		if( availableRoutes().left && ( isOverviewActive() || previousFragment() === false ) ) {
-			slide( indexh - 1, 0 );
+			slide( indexh - 1);
 		}
 	}
 
 	function navigateRight() {
 		// Prioritize revealing fragments
 		if( availableRoutes().right && ( isOverviewActive() || nextFragment() === false ) ) {
-			slide( indexh + 1, 0 );
+			slide( indexh + 1);
 		}
 	}
 
