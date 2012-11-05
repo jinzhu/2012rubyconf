@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+
+		<title>DSL For DSL - Jinzhu @ RubyChinaConf</title>
+
+		<meta name="description" content="DSL For DSL - Jinzhu @ RubyChinaConf">
+		<meta name="author" content="Jinzhu">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+		<div class="reveal">
+			<!-- Any section element inside of this container is displayed as a slide -->
+      <div class="slides">
+        <section>
+          <h1><br/>DSL For DSL</h1>
+          <div>
+            <p style="text-align: center; ">
+            <a href="https://twitter.com/zhangjinzhu" style="color:#fff">张金柱</a>&nbsp;@&nbsp;
+            <a href="http://theplant.jp" style="color:#fff">ThePlant</a><br/>
+            <a href="http://github.com/jinzhu" style="color:#fff">Github /&nbsp;jinzhu</a><br/>
+            <a href="mailto:wosmvp@gmail.com" style="color:#fff">wosmvp@gmail.com</a>
+            </p>
+            <br/>
+            <br/>
+            <p style="font-size:0.6em">
+            (Hit <span class="key">Esc</span> For Overview, Navigate with <span class="key">→</span> and <span class="key">↓</span>)
+            </p>
+          </div>
+        </section>
+
+        <section>
+          <h2><br/>What IS DSL?</h2><br>
+          特定领域语言(Domain Specific Languages)<br><br>
+          用于解决特殊领域中特殊问题表示技术和解决方案的程序设计语言<br>
+        </section>
+
+        <section>
+          <section>
+            <h2><br/>WHAT IS DSL USED FOR?</h2><br/>
+            <div>
+              <div>随机调查了100个程序</div>
+              <div>
+                <span style="color: rgb(255,0,153);">87.53%</span>的程序使用DSL做<font color="#ff0099">配置文件</font><br/>
+                (来自统计局神奇数字)<br/>
+                例如Bundler, Unicorn... 甚至Sinatra
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h3><br/>配置文件用来做什么？</h3>
+            <h3><br>存数据 &amp; 取数据</h3>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2><br>So, what is DSL?</h2>
+            <div>
+              <br>
+              <h4>一种让你更方便的存数据，取数据的语言</h4>
+              <h4>(大多情况下。。。)</h4>
+            </div>
+          </section>
+
+          <section>
+            <h2><br>写DSL的过程<br>
+            </h2>
+            <div>
+              <br/>
+              <h4>枯燥 &amp;&amp; 乏味 &amp;&amp; 重复劳动</h4>
+              <span style="color: rgb(255,0,153);">？？？</span>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h3>实例1： Gemfile</h3>
+          <div>
+            <pre>
+                <code class="ruby">
+gem "rails", :git =&gt; "git://github.com/rails/rails.git"
+gem 'capistrano-confirm', '&gt;= 0.0.6'
+gem 'paygent', :path =&gt; '~/Develop/paygent'
+
+path "~/Develop/qor_dsl" do
+  gem "qor_dsl"
+end
+
+git "git://github.com/rails/rails.git" do
+  gem "activesupport"
+  gem "actionpack"
+end
+
+group :development, :test do
+  gem 'pry-rails'
+end
+
+group :test do
+  gem "timecop"
+end
+</code>
+            </pre>
+          </div>
+        </section>
+
+        <section>
+          <section>
+            <h2><br><br>实例 1 解决方案</h2>
+            <h2><br>???</h2>
+          </section>
+          <section>
+            <h3>传统解决方案</h3>
+
+            <div>
+              <div style="text-align: left;">
+                <ol>
+                  <li>建一个class<br>
+                  </li>
+                  <li>实现实例方法 gem, path, git, group，把调用参数存到实例变量<br>
+                  </li>
+                  <li>path, git, group需要支持block, block中可以使用gem方法, 并且block中gem还需要保存上一级的参数<br>
+                  </li>
+                  <li>最好再抽象出一个class做这个<br>
+                  </li>
+                  <li>读取文件, instance_eval，搞定，收工！</li>
+                </ol>
+              </div><br>
+
+              <p class="fragment roll-in" style="text-align: left;">
+              代码呢？ <font class="yellow">太长了，一个slide写不开。。。</font>
+              </p>
+            </div>
+          </section>
+
+          <section>
+            <h3>DSL FOR DSL解决方案</h3>
+            <div>
+              <pre>
+                    <code class="ruby">class Gemfile::Configuration
+  include Qor::Dsl
+  default_configs [ENV['BUNDLE_GEMFILE'], 'Gemfile']
+
+  node :gem
+
+  [:git, :path, :group].map do |name|
+    node name do
+      node :gem
+    end
+  end
+end</code>
+              </pre>
+            </div>
+            <div>
+              <br>
+            </div>
+
+
+          </section>
+          <section>
+            <h3>查询数据</h3>
+            <pre>
+                        <code class="ruby">Gemfile::Configuration.find('gem', 'rails').name
+#=&gt; rails
+
+# 取出Rails的配置
+Gemfile::Configuration.find('gem', 'rails').options
+#=&gt; {:git=&gt;"git://github.com/rails/rails.git"}
+
+# 取出所有Development环境下的Gem
+development_gems = Gemfile::Configuration.deep_find('gem') do |n|
+  parent = n.parent
+  parent.root? || !parent.is_node?(:group) || parent.is_node?(:group, :development)
+end
+development_gems.map(&amp;:name)
+#=&gt; ["rails", "capistrano-confirm", "paygent", "qor_dsl", "activesupport", "actionpack", "pry-rails"]
+
+# More? Checkout the README/source code of Qor DSL ;)
+# https://github.com/qor/qor_dsl</code>
+            </pre>
+          </section>
+        </section>
+
+        <section>
+          <h3>实例2：Nagios.rb</h3>
+          <div>
+            <pre>
+                        <code class="ruby">contact_emails ["all_teams@example.com"]
+mail do
+  address 'smtp.example.com'
+end
+
+server 'server1' do
+  host '100.200.200.10'
+  username 'app'
+
+  check_disk
+  check_load :warning =&gt; '8,5,5', :critical =&gt; '20,15,10'
+  check_memcached :port =&gt; 11211, :host =&gt; '10.0.0.1'
+  check_mysql_slave :user =&gt; 'nagios_check', :password =&gt; 'xxxxxx'
+end
+
+server 'server2' do
+  contact_emails ["team2@example.com"]
+  host '111.111.111.11'
+
+  username 'app'
+  check_disk :warning =&gt; '10%', :critical =&gt; '8%'
+  check_load :warning =&gt; '8,5,5', :critical =&gt; '20,15,10'
+  port 222
+end</code>
+            </pre>
+          </div>
+        </section>
+
+        <section>
+          <section>
+            <h2><br><br>实例 2 解决方案</h2>
+            <h2><br>???</h2>
+          </section>
+
+          <section>
+            <h3>传统解决方案</h3>
+            <br>
+            <div>
+              和第一个例子的解决方案差不多么。。。<br>
+              天天写这种代码烦不烦啊。。。<br>
+              搞个屎啊。。。<br>
+              我再也不相信爱情了！！！
+            </div>
+          </section>
+
+          <section>
+            <h3>DSL FOR DSL解决方案</h3>
+            <div>
+              <pre>
+                        <code class="ruby">class Nagios::Configuration
+  include Qor::Dsl
+  node :contact_emails
+
+  node :mail do
+    node :address
+  end
+
+  node :server do
+    node :contact_emails, inherit: true
+    node :host
+    node :port, default_value: 22
+    node :username, default_value: 'app'
+
+    node :check_disk, default_options: {warning: '10%', critical: '8%'}
+    node :check_load
+    node :check_memcached
+    node :check_mysql_slave
+  end
+end</code>
+              </pre>
+            </div>
+          </section>
+
+          <section>
+            <h3>查询数据</h3>
+            <pre>
+                        <code class="ruby"># 继承父级
+Nagios::Configuration.find('server', 'server1').first(:contact_emails).value
+#=&gt; "all_teams@example.com"
+# 重写继承
+Nagios::Configuration.find('server', 'server2').first(:contact_emails).value
+#=&gt; team2@example.com
+
+# 默认
+Nagios::Configuration.find('server', 'server1').first(:check_disk).value
+#=&gt; {warning: '10%', critical: '8%'}
+</code>
+            </pre>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2><br>写DSL的过程<br>
+            </h2>
+            <div>
+              <br/>
+              <h4>枯燥 &amp;&amp; 乏味 &amp;&amp; 重复劳动</h4>
+              <span style="color: rgb(255,0,153);">？？？</span><br/>
+              <span class='yellow'>！！！！！！！！</span>
+            </div>
+          </section>
+
+          <section>
+            <div>
+              <br/><br/>
+              <div>
+                为了解决这个枯燥的，乏味的过程<br>
+                <h2><br>DSL FOR DSL</h2>
+                <div class="fragment fade-in">
+                  <span class="notice">听起来太Cool了。。。！！！</span>
+                </div>
+                <div class="fragment fade-in"><br/>可是。。。什么是DSL For DSL？？？</div>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2>Meta Programming?</h2>
+            <h3>Writing Code That Writes Code</h3>
+            <br><br>
+            <h2>DSL FOR DSL?<h2>
+            <h3>Writing DSL That Writes DSL</h3>
+          </section>
+
+          <section>
+            <h2><br><br>How TO?<br></h2>
+            <div class="yellow">翠花，上例子！！！</div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2><br>幕后英雄 - <a href="https://github.com/qor/qor_dsl">Qor DSL</a></h2>
+
+            <div style="text-align: left;">
+              <br/>
+              <ul>
+                <li>从程序中抽象而来</li>
+                <li>减少重复工作（DRY）</li>
+                <li>Production Ready</li>
+              </ul>
+            </div>
+          </section>
+
+          <section>
+            <h3>如何使用</h3>
+            <div style="text-align: left;">
+              <ol>
+                <li>将qor_dsl加入Gemfile 或 Gemspec中</li>
+                <li>创建一个Configuration的class</li>
+                <li>include Qor::DSL</li>
+                <li>定义存数据</li>
+                <li>然后取数据</li>
+              </ol>
+              <br><br><br>
+              <div>
+                用例１：<a href="https://gist.github.com/4010380#file_gemfile.rb">Gemfile.rb</a><br/>
+                用例２：<a href="https://gist.github.com/4010380#file_nagios.rb">Nagios.rb</a><br/>
+                更多 &nbsp; &nbsp; ：<a href="https://github.com/qor/qor_dsl#readme">README</a><br/>
+                更更多：<a href="https://github.com/qor/qor_dsl">GITHUB源码</a>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <section>
+            <h2><br/>更幕后英雄<br>
+              <a href="https://github.com/qor">Qor Open Development Platform</a>
+            </h2>
+
+            <div style="text-align: left;">
+              <br>
+              <ul>
+                <li class="fragment fade-in">强健代码，解决不兼容，升级难问题</li>
+                <li class="fragment fade-in">简化开发过程常见问题</li>
+                <li class="fragment fade-in">开放 & 开源</li>
+              </ul>
+            </div>
+          </section>
+
+          <section>
+            <h3>如何使用</h3>
+            <div style="text-align: left;">
+              <ol>
+                <li class="fragment fade-in">起步中，未完成。。。 -&gt; <span class='yellow'>F*ck</span></li>
+                <li class="fragment fade-in">Coming soon! <span class="fragment yellow">Hopefully!</span></li>
+              </ol>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h1><br>Thanks!<br>
+          </h1>
+          <div>
+            <br>
+          </div>
+          <div>
+            <a href="http://github.com/jinzhu">Jinzhu</a>&nbsp;@&nbsp;<a href="http://theplant.jp/">ThePlant</a>
+          </div>
+          <div>
+            <a href="mailto:wosmvp@gmail.com">wosmvp@gmail.com</a>
+          </div>
+        </section>
+    </div>
+  </div>
+
+  <script src="lib/js/head.min.js"></script>
+  <script src="js/reveal.min.js"></script>
+  <script src="js/jquery.js"></script>
+
+  <style>
+  .key {
+    position: relative;
+    display: inline-block;
+    font: 20px monospace;
+    line-height: 30px;
+    color: #000;
+    padding: 3px 3px;
+    text-shadow: none;
+    letter-spacing: 0;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 2px 2px;
+    vertical-align: sub;
+    margin: 0px 7px;
+  }
+
+  .red {
+    color:red;
+  }
+  .yellow {
+    color: #ff0;
+  }
+  .notice {
+    color: rgb(255,0,153);
+  }
+
+  .reveal pre {
+    box-shadow: none;
+  }
+
+  .reveal code {
+    max-height: 600px !important;
+  }
+  </style>
+
+  <script>
+  Reveal.initialize({
+    controls: true,
+    progress: true,
+    history: true,
+    mouseWheel: false,
+
+    theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+    transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/none
+
+    // Optional libraries used to extend on reveal.js
+    dependencies: [
+      { src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+      { src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+      { src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+      { src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+      { src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+    ]
+  });
+
+  window.addEventListener('click', function(e){
+    if (e.target.nodeName == 'A'){
+      e.target.target = '_blank';
+    }
+  });
+
+  Reveal.addEventListener('fragmentshown', function( event ) {
+    jQuery(event.fragment).removeClass('fragment')
+  });
+  </script>
+  </body>
+</html>
