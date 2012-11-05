@@ -32,7 +32,7 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
       <div class="slides">
         <section>
-          <h1><br/>DSL For DSL</h1>
+          <h1><br/>DSL For DSL<span class='draft red'> (Draft)</span></h1>
           <div>
             <p style="text-align: center; ">
             <a href="https://twitter.com/zhangjinzhu" style="color:#fff">张金柱</a>&nbsp;@&nbsp;
@@ -435,6 +435,10 @@ Nagios::Configuration.find('server', 'server1').first(:check_disk).value
     margin: 0px 7px;
   }
 
+  .draft {
+    font-size: 40px !important;
+  }
+
   .red {
     color:red;
   }
@@ -484,6 +488,10 @@ Nagios::Configuration.find('server', 'server1').first(:check_disk).value
   Reveal.addEventListener('fragmentshown', function( event ) {
     jQuery(event.fragment).removeClass('fragment')
   });
+
+  if (new Date() > Date.parse("2012/11/16")) {
+    jQuery('.draft').remove();
+  }
   </script>
   </body>
 </html>
