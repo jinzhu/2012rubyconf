@@ -359,6 +359,33 @@ Nagios::Configuration.find('server', 'server1').first(:check_disk).value
         </section>
 
         <section>
+          <h3><br>简单的Web Routes实现</h3>
+          <pre>
+                <code class="ruby"># 实现
+require 'qor_dsl'
+
+class SimpleWeb
+  include Qor::Dsl
+  node :get
+end
+
+run proc { |env| [200, {'Content-Type' => 'text'}, [SimpleWeb.first(:get, env["PATH_INFO"]).block.call]] }
+
+# 路由
+SimpleWeb.load do
+  get '/' do
+    "Index Page!"
+  end
+
+  get '/hello' do
+    "Hello World!"
+  end
+end
+</code>
+          </pre>
+        </section>
+
+        <section>
           <section>
             <h2><br>幕后英雄 - <a href="https://github.com/qor/qor_dsl">Qor DSL</a></h2>
 
