@@ -134,15 +134,11 @@ end
             <div>
               <div style="text-align: left;">
                 <ol>
-                  <li>建一个class<br>
-                  </li>
-                  <li>实现实例方法 gem, path, git, group，把调用参数存到实例变量<br>
-                  </li>
-                  <li>path, git, group需要支持block, block中可以使用gem方法, 并且block中gem还需要保存上一级的参数<br>
-                  </li>
-                  <li>最好再抽象出一个class做这个<br>
-                  </li>
-                  <li>读取文件, instance_eval，搞定，收工！</li>
+                  <li class="fragment">建一个class<br></li>
+                  <li class="fragment">实现实例方法 gem, path, git, group，把调用参数存到实例变量<br></li>
+                  <li class="fragment">path, git, group中的block中的仍有gem, 并需要父级的参数<br></li>
+                  <li class="fragment">抽象class实现这个block<br></li>
+                  <li class="fragment">读取文件, instance_eval，搞定，收工！</li>
                 </ol>
               </div><br>
 
@@ -263,11 +259,14 @@ end</code>
           <section>
             <h3>传统解决方案</h3>
             <br>
-            <div>
-              和第一个例子的解决方案差不多么。。。<br>
-              天天写这种代码烦不烦啊。。。<br>
-              搞个屎啊。。。<br>
-              我再也不相信爱情了！！！
+            <div style="text-align: left;">
+              <ol>
+                <li class="fragment">建一个class<br></li>
+                <li class="fragment">实现实例方法 contact_emails, mail, server，把调用参数存到实例变量<br></li>
+                <li class="fragment">抽象class, 实现对mail的block的支持<br></li>
+                <li class="fragment">抽象class, 实现对server的block的支持<br></li>
+                <li class="fragment">读取文件, instance_eval，搞定，收工！</li>
+              </ol>
             </div>
           </section>
 
@@ -320,32 +319,31 @@ Nagios::Configuration.find('server', 'server1').first(:check_disk).value
 
         <section>
           <section>
-            <h2><br>写DSL的过程<br>
-            </h2>
-            <div>
-              <br/>
-              <h4>枯燥 &amp;&amp; 乏味 &amp;&amp; 重复劳动</h4>
-              <span style="color: rgb(255,0,153);">？？？</span><br/>
-              <span class='yellow'>！！！！！！！！</span>
+            <h3><br>实例1，实例2传统解决方案对比？<br></h3>
+
+            <div class="fragment">
+              <h3><span class="yellow"><br/>十分相似！<br></span></h3><br>
             </div>
           </section>
 
           <section>
-            <div>
-              <br/><br/>
-              <div>
-                为了解决这个枯燥的，乏味的过程<br>
-                <h2><br>DSL FOR DSL</h2>
-                <div class="fragment fade-in">
-                  <span class="yellow">听起来太Cool了。。。！！！</span>
-                </div>
-                <div class="fragment fade-in"><br/>可是。。。什么是DSL For DSL？？？</div>
-              </div>
-            </div>
+            <h2><br>构建DSL过程<br></h2>
+
+            <h3 class="fragment"><span class="yellow simple"><br/>简单？</span></h3>
+
+            <h3 class="fragment toggle_simple"><span class="yellow"><br/>枯燥 &amp;&amp; 乏味 &amp;&amp; 重复</span><br></h3>
+
+            <blockquote class="fragment">
+              <h3><span class="yellow">Don't Repeat Yourself！</span></h3>
+            </blockquote>
           </section>
 
           <section>
-            <h2>Meta Programming?</h2>
+            <h1><br>DSL FOR DSL？</h1><br/>
+          </section>
+
+          <section>
+            <h2><br>Meta Programming?</h2>
             <h3>Writing Code That Writes Code</h3>
             <br><br>
             <div class="fragment">
@@ -356,7 +354,7 @@ Nagios::Configuration.find('server', 'server1').first(:check_disk).value
 
           <section>
             <h1><br>DSL FOR DSL</h1>
-            <h1>How???<br></h1>
+            <h1 class="fragment fade-in">How？</h1>
           </section>
         </section>
 
@@ -462,13 +460,10 @@ Nagios::Configuration.find('server', 'server1').first(:check_disk).value
   .draft {
     font-size: 40px !important;
   }
+  .red { color:red; }
+  .yellow { color: #ff0; }
+  .gray { color: gray !important; }
 
-  .red {
-    color:red;
-  }
-  .yellow {
-    color: #ff0;
-  }
   .notice {
     color: rgb(255,0,153);
   }
@@ -511,6 +506,9 @@ Nagios::Configuration.find('server', 'server1').first(:check_disk).value
 
   Reveal.addEventListener('fragmentshown', function( event ) {
     jQuery(event.fragment).removeClass('fragment')
+    if (jQuery(event.fragment).hasClass("toggle_simple")) {
+      $(".simple").addClass("gray")
+    }
   });
 
   if (new Date() > Date.parse("2012/11/16")) {
