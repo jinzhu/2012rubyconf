@@ -98,8 +98,7 @@
           <h3>实例1： Gemfile</h3>
           <div>
             <pre>
-                <code class="ruby">
-gem "rails", :git =&gt; "git://github.com/rails/rails.git"
+                <code class="ruby">gem "rails", :git =&gt; "git://github.com/rails/rails.git"
 gem 'capistrano-confirm', '&gt;= 0.0.6'
 gem 'paygent', :path =&gt; '~/Develop/paygent'
 
@@ -112,7 +111,7 @@ git "git://github.com/rails/rails.git" do
   gem "actionpack"
 end
 
-group :development, :test do
+group :development do
   gem 'pry-rails'
 end
 
@@ -178,24 +177,46 @@ end</code>
 
           </section>
           <section>
-            <h3>查询数据</h3>
+            <h3>查询数据1</h3>
             <pre>
                         <code class="ruby">Gemfile::Configuration.find('gem', 'rails').name
 #=&gt; rails
 
 # 取出Rails的配置
 Gemfile::Configuration.find('gem', 'rails').options
-#=&gt; {:git=&gt;"git://github.com/rails/rails.git"}
+#=&gt; {git: "git://github.com/rails/rails.git"}
+
+# 找到第一个path节点对象
+path = Gemfile::Configuration.first('path')
+#=&gt; &lt;Qor::Dsl::Node:0x3fd2100 {name: "~/Develop/qor_dsl", config: :path}&gt;
+
+# 嵌套查找
+Gemgile::Configuration.first('path').find('gem')
+#=&gt; [&lt;Qor::Dsl::Node:0x3fe4894dc288 {name: "qor_dsl", parent: "{path: ~/Develop/qor_dsl}", config: :gem}&gt;]
+
+# 查找父节点
+Gemgil e::Configuration.find('gem', 'qor_dsl').parent
+#=&gt; &lt;Qor::Dsl::Node:0x3fd2100 {name: "~/Develop/qor_dsl", config: :path}&gt;
+</code>
+            </pre>
+          </section>
+          <section>
+            <h3>查询数据2</h3>
+            <pre>
+                        <code class="ruby"># 取出所有的Gem
+all_gems = Gemfile::Configuration.deep_find('gem').map(&amp;:name)
+#=&gt; ["rails", "capistrano-confirm", "paygent", "qor_dsl", "activesupport", "actionpack", "pry-rails", "timecop"]
 
 # 取出所有Development环境下的Gem
-development_gems = Gemfile::Configuration.deep_find('gem') do |n|
-  parent = n.parent
-  parent.root? || !parent.is_node?(:group) || parent.is_node?(:group, :development)
-end
-development_gems.map(&amp;:name)
+development_gems = Gemfile::Configuration.deep_find('gem') do |node|
+  parent = node.parent
+  parent.root? ||
+    !parent.is_node?(:group) ||
+    parent.is_node?(:group, :development)
+end.map(&amp;:name)
 #=&gt; ["rails", "capistrano-confirm", "paygent", "qor_dsl", "activesupport", "actionpack", "pry-rails"]
 
-# More? Checkout the README/source code of Qor DSL ;)
+# More? Checkout the README
 # https://github.com/qor/qor_dsl</code>
             </pre>
           </section>
@@ -223,11 +244,11 @@ end
 server 'server2' do
   contact_emails ["team2@example.com"]
   host '111.111.111.11'
-
   username 'app'
+  port 222
+
   check_disk :warning =&gt; '10%', :critical =&gt; '8%'
   check_load :warning =&gt; '8,5,5', :critical =&gt; '20,15,10'
-  port 222
 end</code>
             </pre>
           </div>
@@ -284,11 +305,12 @@ end</code>
                         <code class="ruby"># 继承父级
 Nagios::Configuration.find('server', 'server1').first(:contact_emails).value
 #=&gt; "all_teams@example.com"
+
 # 重写继承
 Nagios::Configuration.find('server', 'server2').first(:contact_emails).value
 #=&gt; team2@example.com
 
-# 默认
+# 默认值
 Nagios::Configuration.find('server', 'server1').first(:check_disk).value
 #=&gt; {warning: '10%', critical: '8%'}
 </code>
@@ -315,7 +337,7 @@ Nagios::Configuration.find('server', 'server1').first(:check_disk).value
                 为了解决这个枯燥的，乏味的过程<br>
                 <h2><br>DSL FOR DSL</h2>
                 <div class="fragment fade-in">
-                  <span class="notice">听起来太Cool了。。。！！！</span>
+                  <span class="yellow">听起来太Cool了。。。！！！</span>
                 </div>
                 <div class="fragment fade-in"><br/>可是。。。什么是DSL For DSL？？？</div>
               </div>
@@ -326,13 +348,15 @@ Nagios::Configuration.find('server', 'server1').first(:check_disk).value
             <h2>Meta Programming?</h2>
             <h3>Writing Code That Writes Code</h3>
             <br><br>
-            <h2>DSL FOR DSL?<h2>
-            <h3>Writing DSL That Writes DSL</h3>
+            <div class="fragment">
+              <h2>DSL FOR DSL?</h2>
+              <h3>Writing DSL That Writes DSL</h3>
+            </div>
           </section>
 
           <section>
-            <h2><br><br>How TO?<br></h2>
-            <div class="yellow">翠花，上例子！！！</div>
+            <h1><br>DSL FOR DSL</h1>
+            <h1>How???<br></h1>
           </section>
         </section>
 
