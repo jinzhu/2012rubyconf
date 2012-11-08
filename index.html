@@ -82,16 +82,6 @@
               <h4>(大多情况下。。。)</h4>
             </div>
           </section>
-
-          <section>
-            <h2><br>写DSL的过程<br>
-            </h2>
-            <div>
-              <br/>
-              <h4>枯燥 &amp;&amp; 乏味 &amp;&amp; 重复劳动</h4>
-              <span style="color: rgb(255,0,153);">？？？</span>
-            </div>
-          </section>
         </section>
 
         <section>
@@ -136,7 +126,7 @@ end
                 <ol>
                   <li class="fragment">建一个class<br></li>
                   <li class="fragment">实现实例方法 gem, path, git, group，把调用参数存到实例变量<br></li>
-                  <li class="fragment">path, git, group中的block中的仍有gem, 并需要父级的参数<br></li>
+                  <li class="fragment">path, git, group中的block中的仍有gem方法, 并需要保存父级的参数<br></li>
                   <li class="fragment">抽象class实现这个block<br></li>
                   <li class="fragment">读取文件, instance_eval，搞定，收工！</li>
                 </ol>
@@ -175,11 +165,11 @@ end</code>
           <section>
             <h3>查询数据1</h3>
             <pre>
-                        <code class="ruby">Gemfile::Configuration.find('gem', 'rails').name
+                        <code class="ruby">Gemfile::Configuration.first('gem', 'rails').name
 #=&gt; rails
 
 # 取出Rails的配置
-Gemfile::Configuration.find('gem', 'rails').options
+Gemfile::Configuration.first('gem', 'rails').options
 #=&gt; {git: "git://github.com/rails/rails.git"}
 
 # 找到第一个path节点对象
@@ -187,11 +177,11 @@ path = Gemfile::Configuration.first('path')
 #=&gt; &lt;Qor::Dsl::Node:0x3fd2100 {name: "~/Develop/qor_dsl", config: :path}&gt;
 
 # 嵌套查找
-Gemgile::Configuration.first('path').find('gem')
+Gemfile::Configuration.first('path').find('gem')
 #=&gt; [&lt;Qor::Dsl::Node:0x3fe4894dc288 {name: "qor_dsl", parent: "{path: ~/Develop/qor_dsl}", config: :gem}&gt;]
 
 # 查找父节点
-Gemgil e::Configuration.find('gem', 'qor_dsl').parent
+Gemfile::Configuration.first('gem', 'qor_dsl').parent
 #=&gt; &lt;Qor::Dsl::Node:0x3fd2100 {name: "~/Develop/qor_dsl", config: :path}&gt;
 </code>
             </pre>
@@ -302,15 +292,15 @@ end</code>
             <h3>查询数据</h3>
             <pre>
                         <code class="ruby"># 继承父级
-Nagios::Configuration.find('server', 'server1').first(:contact_emails).value
+Nagios::Configuration.first('server', 'server1').first(:contact_emails).value
 #=&gt; "all_teams@example.com"
 
 # 重写继承
-Nagios::Configuration.find('server', 'server2').first(:contact_emails).value
+Nagios::Configuration.first('server', 'server2').first(:contact_emails).value
 #=&gt; team2@example.com
 
 # 默认值
-Nagios::Configuration.find('server', 'server1').first(:check_disk).value
+Nagios::Configuration.first('server', 'server1').first(:check_disk).value
 #=&gt; {warning: '10%', critical: '8%'}
 </code>
             </pre>
@@ -319,47 +309,39 @@ Nagios::Configuration.find('server', 'server1').first(:check_disk).value
 
         <section>
           <section>
-            <h3><br>实例1，实例2传统解决方案对比？<br></h3>
-
-            <div class="fragment">
-              <h3><span class="yellow"><br/>十分相似！<br></span></h3><br>
-            </div>
-          </section>
-
-          <section>
-            <h2><br>构建DSL过程<br></h2>
+            <h3><br>实例1，实例2传统解决方案总结<br></h3>
 
             <h3 class="fragment"><span class="yellow simple"><br/>简单？</span></h3>
 
-            <h3 class="fragment toggle_simple"><span class="yellow"><br/>枯燥 &amp;&amp; 乏味 &amp;&amp; 重复</span><br></h3>
+            <div class="fragment toggle_simple">
+              <h3><span class="yellow similar"><br/>十分相似！<br></span></h3>
+            </div>
 
-            <blockquote class="fragment">
+            <h3 class="fragment toggle_similar"><span class="yellow"><br/>枯燥 &amp;&amp; 乏味 &amp;&amp; 重复</span><br></h3>
+          </section>
+
+          <section>
+            <br/><br/>
+            <blockquote>
               <h3><span class="yellow">Don't Repeat Yourself！</span></h3>
             </blockquote>
+
+            <h2 class="fragment"><br><span class="yellow">DSL FOR DSL</span></h2>
           </section>
 
           <section>
-            <h1><br>DSL FOR DSL？</h1><br/>
-          </section>
-
-          <section>
-            <h2><br>Meta Programming?</h2>
+            <h2><br/>Meta Programming?</h2>
             <h3>Writing Code That Writes Code</h3>
             <br><br>
             <div class="fragment">
-              <h2>DSL FOR DSL?</h2>
-              <h3>Writing DSL That Writes DSL</h3>
+              <h2><span class="yellow">DSL FOR DSL</span></h2>
+              <h3><span class="yellow">Writing DSL That Writes DSL</span></h3>
             </div>
-          </section>
-
-          <section>
-            <h1><br>DSL FOR DSL</h1>
-            <h1 class="fragment fade-in">How？</h1>
           </section>
         </section>
 
         <section>
-          <h3><br>简单的Web Routes实现</h3>
+          <h3>简单的Web & Routes实现</h3>
           <pre>
                 <code class="ruby"># 实现
 require 'qor_dsl'
@@ -535,6 +517,9 @@ end
     jQuery(event.fragment).removeClass('fragment')
     if (jQuery(event.fragment).hasClass("toggle_simple")) {
       $(".simple").addClass("gray")
+    }
+    if (jQuery(event.fragment).hasClass("toggle_similar")) {
+      $(".similar").addClass("gray")
     }
   });
 
