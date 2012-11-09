@@ -69,7 +69,7 @@
 
           <section>
             <h3><br/>配置文件用来做什么？</h3>
-            <h3><br>存数据 &amp; 取数据</h3>
+            <h3 class="fragment"><br>存数据 &amp; 取数据</h3>
           </section>
         </section>
 
@@ -127,7 +127,7 @@ end
                   <li class="fragment">建一个class<br></li>
                   <li class="fragment">实现实例方法 gem, path, git, group，把调用参数存到实例变量<br></li>
                   <li class="fragment">path, git, group中的block中的仍有gem方法, 并需要保存父级的参数<br></li>
-                  <li class="fragment">抽象class实现这个block<br></li>
+                  <li class="fragment">抽象class<br></li>
                   <li class="fragment">读取文件, instance_eval，搞定，收工！</li>
                 </ol>
               </div><br>
@@ -156,12 +156,8 @@ end
 end</code>
               </pre>
             </div>
-            <div>
-              <br>
-            </div>
-
-
           </section>
+
           <section>
             <h3>查询数据1</h3>
             <pre>
@@ -201,9 +197,7 @@ development_gems = Gemfile::Configuration.deep_find('gem') do |node|
     parent.is_node?(:group, :development)
 end.map(&amp;:name)
 #=&gt; ["rails", "capistrano-confirm", "paygent", "qor_dsl", "activesupport", "actionpack", "pry-rails"]
-
-# More? Checkout the README
-# https://github.com/qor/qor_dsl</code>
+</code>
             </pre>
           </section>
         </section>
@@ -300,7 +294,7 @@ Nagios::Configuration.first('server', 'server2').first(:contact_emails).value
 #=&gt; team2@example.com
 
 # 默认值
-Nagios::Configuration.first('server', 'server1').first(:check_disk).value
+Nagios::Configuration.first('server', 'server1').first(:check_disk).options
 #=&gt; {warning: '10%', critical: '8%'}
 </code>
             </pre>
@@ -341,33 +335,6 @@ Nagios::Configuration.first('server', 'server1').first(:check_disk).value
         </section>
 
         <section>
-          <h3>简单的Web & Routes实现</h3>
-          <pre>
-                <code class="ruby"># 实现
-require 'qor_dsl'
-
-class SimpleWeb
-  include Qor::Dsl
-  node :get
-end
-
-run proc { |env| [200, {'Content-Type' => 'text'}, [SimpleWeb.first(:get, env["PATH_INFO"]).block.call]] }
-
-# 路由
-SimpleWeb.load do
-  get '/' do
-    "Index Page!"
-  end
-
-  get '/hello' do
-    "Hello World!"
-  end
-end
-</code>
-          </pre>
-        </section>
-
-        <section>
           <section>
             <h2><br>幕后英雄 - <a href="https://github.com/qor/qor_dsl">Qor DSL</a></h2>
 
@@ -400,6 +367,33 @@ end
               </div>
             </div>
           </section>
+        </section>
+
+        <section>
+          <h3>简单的Web & Routes实现</h3>
+          <pre>
+                <code class="ruby"># 实现
+require 'qor_dsl'
+
+class SimpleWeb
+  include Qor::Dsl
+  node :get
+end
+
+run proc { |env| [200, {'Content-Type' => 'text'}, [SimpleWeb.first(:get, env["PATH_INFO"]).block.call]] }
+
+# 路由
+SimpleWeb.load do
+  get '/' do
+    "Index Page!"
+  end
+
+  get '/hello' do
+    "Hello World!"
+  end
+end
+</code>
+          </pre>
         </section>
 
         <section>
