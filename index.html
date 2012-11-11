@@ -49,14 +49,14 @@
         </section>
 
         <section>
-          <h2><br/>What IS DSL?</h2><br>
+          <h2>What IS DSL?</h2><br>
           特定领域语言(Domain Specific Languages)<br><br>
           用于解决特殊领域中特殊问题表示技术和解决方案的程序设计语言<br>
         </section>
 
         <section>
           <section>
-            <h2><br/>WHAT IS DSL USED FOR?</h2><br/>
+            <h2>WHAT IS DSL USED FOR?</h2><br/>
             <div>
               <div>随机调查了100个程序</div>
               <div>
@@ -68,14 +68,14 @@
           </section>
 
           <section>
-            <h3><br/>配置文件用来做什么？</h3>
+            <h3>配置文件用来做什么？</h3>
             <h3 class="fragment"><br>存数据 &amp; 取数据</h3>
           </section>
         </section>
 
         <section>
           <section>
-            <h2><br>So, what is DSL?</h2>
+            <h2>So, what is DSL?</h2>
             <div>
               <br>
               <h4>一种让你更方便的存数据，取数据的语言</h4>
@@ -115,7 +115,7 @@ end
 
         <section>
           <section>
-            <h2><br><br>实例 1 解决方案</h2>
+            <h2><br>实例 1 解决方案</h2>
             <h2><br>???</h2>
           </section>
           <section>
@@ -173,11 +173,11 @@ path = Gemfile::Configuration.first('path')
 #=&gt; &lt;Qor::Dsl::Node:0x3fd2100 {name: "~/Develop/qor_dsl", config: :path}&gt;
 
 # 嵌套查找
-Gemfile::Configuration.first('path').find('gem')
+qor_dsl = Gemfile::Configuration.first('path').find('gem')
 #=&gt; [&lt;Qor::Dsl::Node:0x3fe4894dc288 {name: "qor_dsl", parent: "{path: ~/Develop/qor_dsl}", config: :gem}&gt;]
 
 # 查找父节点
-Gemfile::Configuration.first('gem', 'qor_dsl').parent
+qor_dsl.parent
 #=&gt; &lt;Qor::Dsl::Node:0x3fd2100 {name: "~/Develop/qor_dsl", config: :path}&gt;
 </code>
             </pre>
@@ -236,7 +236,7 @@ end</code>
 
         <section>
           <section>
-            <h2><br><br>实例 2 解决方案</h2>
+            <h2><br>实例 2 解决方案</h2>
             <h2><br>???</h2>
           </section>
 
@@ -315,7 +315,7 @@ Nagios::Configuration.first('server', 'server1').first(:check_disk).options
           </section>
 
           <section>
-            <br/><br/>
+            <br/>
             <blockquote>
               <h3><span class="yellow">Don't Repeat Yourself！</span></h3>
             </blockquote>
@@ -324,7 +324,7 @@ Nagios::Configuration.first('server', 'server1').first(:check_disk).options
           </section>
 
           <section>
-            <h2><br/>Meta Programming?</h2>
+            <h2>Meta Programming?</h2>
             <h3>Writing Code That Writes Code</h3>
             <br><br>
             <div class="fragment">
@@ -336,7 +336,7 @@ Nagios::Configuration.first('server', 'server1').first(:check_disk).options
 
         <section>
           <section>
-            <h2><br>幕后英雄 - <a href="https://github.com/qor/qor_dsl">Qor DSL</a></h2>
+            <h2>幕后英雄 - <a href="https://github.com/qor/qor_dsl">Qor DSL</a></h2>
 
             <div style="text-align: left;">
               <br/>
@@ -398,7 +398,7 @@ end
 
         <section>
           <section>
-            <h2><br/>更幕后英雄<br>
+            <h2>更幕后英雄<br>
               <a href="https://github.com/qor">Qor Open Development Platform</a>
             </h2>
 
@@ -424,7 +424,7 @@ end
         </section>
 
         <section>
-          <h1><br>Thanks!<br>
+          <h1>Thanks!<br>
           </h1>
           <div>
             <br>
