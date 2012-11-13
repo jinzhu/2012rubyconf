@@ -62,7 +62,7 @@
               <div>
                 <span style="color: rgb(255,0,153);">87.53%</span>的程序使用DSL做<font color="#ff0099">配置文件</font><br/>
                 (来自统计局神奇数字)<br/>
-                例如Bundler, Unicorn... 甚至Sinatra
+                例如Bundler, Unicorn, Devise...
               </div>
             </div>
           </section>
@@ -367,12 +367,22 @@ Nagios::Configuration.first('server', 'server1').first(:check_disk).options
               </div>
             </div>
           </section>
+          <section>
+            <h3>Qor DSL可用来做什么？</h3>
+            <div style="text-align: left;">
+              <ul>
+                <li class="fragment">做程序的相关配置 (如Bundler, Unicorn, Devise等)</li>
+                <li class="fragment">把程序变成类配置文件 (如Sinatra)</li>
+              </ul>
+            </div>
+          </section>
         </section>
 
         <section>
-          <h3>简单的Web & Routes实现</h3>
-          <pre>
-                <code class="ruby"># 实现
+          <section>
+            <h3>简单的Sinatra实现</h3>
+            <pre>
+<code class="ruby"># 代码实现
 require 'qor_dsl'
 
 class SimpleWeb
@@ -385,15 +395,112 @@ run proc { |env| [200, {'Content-Type' => 'text'}, [SimpleWeb.first(:get, env["P
 # 路由
 SimpleWeb.load do
   get '/' do
-    "Index Page!"
-  end
-
-  get '/hello' do
-    "Hello World!"
+    'Hello world!'
   end
 end
 </code>
-          </pre>
+            </pre>
+          </section>
+
+          <section>
+            <h3>复杂一点</h3>
+            <pre>
+<code class="ruby">
+get '/' do
+  "Hello #{env["PATH_INFO"]}"
+end
+</code>
+            </pre>
+          </section>
+
+          <section>
+            <pre>
+<code class="ruby">require 'qor_dsl'
+
+class SimpleWeb
+  class Configuration
+    include Qor::Dsl
+    node :get
+  end
+
+  class Base
+    attr_accessor :env
+
+    def initialize env
+      self.env = env
+    end
+
+    def call
+      [200, {'Content-Type' => 'text'}, [instance_eval(&SimpleWeb::Configuration.first(:get, env["PATH_INFO"]).block)]]
+    end
+  end
+end
+
+run proc { |env| SimpleWeb::Base.new(env).call }
+</code>
+            </pre>
+          </section>
+
+          <section>
+            <h3>再复杂一点</h3>
+            <pre>
+<code class="ruby">class Available
+  def initialize(url, option)
+    @url, @option = url, option
+  end
+
+  def match(url)
+    (@url == url) &&
+      (@option[:from]..@option[:to]).include?(Time.now.hour)
+  end
+end
+
+get %r(/hello/(.*)) do
+  "Hello World!"
+end
+
+get Available.new("/now", from: 6, to: 18) do
+  "Day Time!"
+end
+
+get "/now" do
+  "Night Time!"
+end
+</code>
+            </pre>
+          </section>
+
+          <section>
+            <pre>
+<code class="ruby">class SimpleWeb
+  class Base
+    attr_accessor :env
+
+    def initialize env
+      self.env = env
+    end
+
+    def route
+      SimpleWeb::Configuration.first(:get) do |n|
+        name, path = n.name, env["PATH_INFO"]
+        name.respond_to?(:match) ? name.match(path) : name == path
+      end
+    end
+
+    def body
+      instance_eval(&route.block)
+    end
+
+    def call
+      [200, {'Content-Type' => 'text'}, [body]]
+    end
+  end
+end
+
+run proc { |env| SimpleWeb::Base.new(env).call }
+</code>
+            </pre>
+          </section>
         </section>
 
         <section>
