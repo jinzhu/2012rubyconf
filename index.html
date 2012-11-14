@@ -159,38 +159,57 @@ end</code>
           </section>
 
           <section>
-            <h3>查询数据1</h3>
+            <h3>查询数据（1）</h3>
             <pre>
-                        <code class="ruby">Gemfile::Configuration.first('gem', 'rails').name
+                        <code class="ruby"># 找到第一个节点
+first_node = Gemfile::Configuration.first('gem')
+#=&gt; #&lt;Qor::Dsl::Node:0x3fb8 {name: "rails", config: :gem}&gt;
+
+first_node.name
 #=&gt; rails
 
-# 取出Rails的配置
-Gemfile::Configuration.first('gem', 'rails').options
+first_node.options
 #=&gt; {git: "git://github.com/rails/rails.git"}
 
 # 找到第一个path节点对象
-path = Gemfile::Configuration.first('path')
+first_path = Gemfile::Configuration.first('path')
 #=&gt; &lt;Qor::Dsl::Node:0x3fd2100 {name: "~/Develop/qor_dsl", config: :path}&gt;
 
 # 嵌套查找
-qor_dsl = Gemfile::Configuration.first('path').find('gem')
-#=&gt; [&lt;Qor::Dsl::Node:0x3fe4894dc288 {name: "qor_dsl", parent: "{path: ~/Develop/qor_dsl}", config: :gem}&gt;]
-
-# 查找父节点
-qor_dsl.parent
-#=&gt; &lt;Qor::Dsl::Node:0x3fd2100 {name: "~/Develop/qor_dsl", config: :path}&gt;
+qor_dsl = first_path.first('gem')
+#=&gt; &lt;Qor::Dsl::Node:0x3fe4894dc288 {name: "qor_dsl", parent: "{path: ~/Develop/qor_dsl}", config: :gem}&gt;
 </code>
             </pre>
           </section>
           <section>
-            <h3>查询数据2</h3>
+            <h3>查询数据（2）</h3>
             <pre>
-                        <code class="ruby"># 取出所有的Gem
-all_gems = Gemfile::Configuration.deep_find('gem').map(&amp;:name)
+                        <code class="ruby"># 查找父节点
+qor_dsl.parent
+#=&gt; &lt;Qor::Dsl::Node:0x3fd2100 {name: "~/Develop/qor_dsl", config: :path}&gt;
+
+# 取出children
+first_path.children
+#=&gt; [&lt;Qor::Dsl::Node:0x3fd2100 {name: "~/Develop/qor_dsl", config: :path}&gt;]
+
+# 取出第一级的Gems
+Gemfile::Configuration.find('gem').map(&amp;:name)
+#=&gt; ["rails", "capistrano-confirm", "paygent"]
+
+Gemfile::Configuration.find('gem')[-1].name
+#=&gt; paygent
+</code>
+            </pre>
+          </section>
+          <section>
+            <h3>查询数据（3）</h3>
+            <pre>
+                        <code class="ruby"># 所有级别的Gems
+Gemfile::Configuration.deep_find('gem').map(&amp;:name)
 #=&gt; ["rails", "capistrano-confirm", "paygent", "qor_dsl", "activesupport", "actionpack", "pry-rails", "timecop"]
 
 # 取出所有Development环境下的Gem
-development_gems = Gemfile::Configuration.deep_find('gem') do |node|
+Gemfile::Configuration.deep_find('gem') do |node|
   parent = node.parent
   parent.root? ||
     !parent.is_node?(:group) ||
@@ -343,7 +362,6 @@ Nagios::Configuration.first('server', 'server1').first(:check_disk).options
               <ul>
                 <li>从程序中抽象而来</li>
                 <li>减少重复工作（DRY）</li>
-                <li>Production Ready</li>
               </ul>
             </div>
           </section>
