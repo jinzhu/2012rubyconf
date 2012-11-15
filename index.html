@@ -62,7 +62,7 @@
               <div>
                 <span style="color: rgb(255,0,153);">87.53%</span>的程序使用DSL做<font color="#ff0099">配置文件</font><br/>
                 (来自统计局神奇数字)<br/>
-                例如Bundler, Unicorn, Devise...
+                例如Bundler, Unicorn...
               </div>
             </div>
           </section>
@@ -389,8 +389,8 @@ Nagios::Configuration.first('server', 'server1').first(:check_disk).options
             <h3>Qor DSL可用来做什么？</h3>
             <div style="text-align: left;">
               <ul>
-                <li class="fragment">做程序的相关配置 (如Bundler, Unicorn, Devise等)</li>
-                <li class="fragment">把程序变成类配置文件 (如Sinatra)</li>
+                <li class="fragment">做程序的相关配置</li>
+                <li class="fragment">把程序变成类配置文件</li>
               </ul>
             </div>
           </section>
@@ -398,7 +398,19 @@ Nagios::Configuration.first('server', 'server1').first(:check_disk).options
 
         <section>
           <section>
-            <h3>简单的Sinatra实现</h3>
+            <h3>Sinatra的样例</h3>
+            <pre>
+<code class="ruby">require 'sinatra'
+
+get '/hi' do
+  "Hello World!"
+end
+</code>
+            </pre>
+          </section>
+
+          <section>
+            <h3>简单的Qor DSL实现</h3>
             <pre>
 <code class="ruby"># 代码实现
 require 'qor_dsl'
