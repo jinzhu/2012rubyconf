@@ -176,7 +176,7 @@ first_path = Gemfile::Configuration.first('path')
 #=&gt; &lt;Qor::Dsl::Node:0x3fd2100 {name: "~/Develop/qor_dsl", config: :path}&gt;
 
 # 嵌套查找
-qor_dsl = first_path.first('gem')
+qor_dsl = first_path.first('gem', 'qor_dsl')
 #=&gt; &lt;Qor::Dsl::Node:0x3fe4894dc288 {name: "qor_dsl", parent: "{path: ~/Develop/qor_dsl}", config: :gem}&gt;
 </code>
             </pre>
@@ -410,7 +410,7 @@ end
           </section>
 
           <section>
-            <h3>简单的Qor DSL实现</h3>
+            <h3>Qor DSL & Rack的实现</h3>
             <pre>
 <code class="ruby"># 代码实现
 require 'qor_dsl'
@@ -424,7 +424,7 @@ run proc { |env| [200, {'Content-Type' => 'text'}, [SimpleWeb.first(:get, env["P
 
 # 路由
 SimpleWeb.load do
-  get '/' do
+  get '/hi' do
     'Hello world!'
   end
 end
@@ -433,10 +433,10 @@ end
           </section>
 
           <section>
-            <h3>复杂一点</h3>
+            <h3>稍复杂一点</h3>
             <pre>
 <code class="ruby">
-get '/' do
+get '/hi' do
   "Hello #{env["PATH_INFO"]}"
 end
 </code>
