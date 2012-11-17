@@ -389,7 +389,7 @@ Nagios::Configuration.first('server', 'server1').first(:check_disk).options
             </div>
           </section>
           <section>
-            <h3>怎么取数据</h3>
+            <h3>怎么取数据?</h3>
             <pre>
             <code>= Class methods:
 first
@@ -421,8 +421,8 @@ is_node?
             <h3>Qor DSL可用来做什么？</h3>
             <div style="text-align: left;">
               <ul>
-                <li class="fragment">做程序的相关配置</li>
-                <li class="fragment">把程序变成类配置文件</li>
+                <li class="fragment">做程序的配置文件</li>
+                <li class="fragment">把程序做成配置文件</li>
               </ul>
             </div>
           </section>
@@ -576,6 +576,7 @@ run proc { |env| SimpleWeb::Base.new(env).call }
               <ul>
                 <li class="fragment fade-in">强健代码，解决不兼容，升级难问题</li>
                 <li class="fragment fade-in">简化开发过程常见问题</li>
+                <!-- log multi servers, monitor, cache, excel import -->
                 <li class="fragment fade-in">开放 & 开源</li>
               </ul>
             </div>
