@@ -313,6 +313,9 @@ Nagios::Configuration.first('server', 'server2').first(:contact_emails).value
 #=&gt; team2@example.com
 
 # 默认值
+Nagios::Configuration.first('server', 'server1').first(:port).value
+#=&gt; 22
+
 Nagios::Configuration.first('server', 'server1').first(:check_disk).options
 #=&gt; {warning: '10%', critical: '8%'}
 </code>
@@ -380,10 +383,39 @@ Nagios::Configuration.first('server', 'server1').first(:check_disk).options
               <div>
                 用例１：<a href="https://gist.github.com/4010380#file_gemfile.rb">Gemfile.rb</a><br/>
                 用例２：<a href="https://gist.github.com/4010380#file_nagios.rb">Nagios.rb</a><br/>
-                更多 &nbsp; &nbsp; ：<a href="https://github.com/qor/qor_dsl#readme">README</a><br/>
+                更多&nbsp; &nbsp;：<a href="https://github.com/qor/qor_dsl#readme">README</a><br/>
                 更更多：<a href="https://github.com/qor/qor_dsl">GITHUB源码</a>
               </div>
             </div>
+          </section>
+          <section>
+            <h3>怎么取数据</h3>
+            <pre>
+            <code>= Class methods:
+first
+find
+deep_find
+
+default_configs
+load
+
+= Instance methods:
+name
+options
+default_options
+value
+default_value
+block
+default_block
+
+parent
+children
+root
+root?
+dummy?
+is_node?
+</code>
+            </pre>
           </section>
           <section>
             <h3>Qor DSL可用来做什么？</h3>
