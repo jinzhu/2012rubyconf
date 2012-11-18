@@ -208,6 +208,7 @@ Gemfile::Configuration.find('gem')[-1].name
 Gemfile::Configuration.deep_find('gem').map(&amp;:name)
 #=&gt; ["rails", "capistrano-confirm", "paygent", "qor_dsl", "activesupport", "actionpack", "pry-rails", "timecop"]
 
+
 # 取出所有Development环境下的Gem
 Gemfile::Configuration.deep_find('gem') do |node|
   parent = node.parent
@@ -383,7 +384,7 @@ Nagios::Configuration.first('server', 'server1').first(:check_disk).options
               <div>
                 用例１：<a href="https://gist.github.com/4010380#file_gemfile.rb">Gemfile.rb</a><br/>
                 用例２：<a href="https://gist.github.com/4010380#file_nagios.rb">Nagios.rb</a><br/>
-                更多&nbsp; &nbsp;：<a href="https://github.com/qor/qor_dsl#readme">README</a><br/>
+                更多&nbsp;&nbsp;&nbsp;&nbsp;：<a href="https://github.com/qor/qor_dsl#readme">README</a><br/>
                 更更多：<a href="https://github.com/qor/qor_dsl">GITHUB源码</a>
               </div>
             </div>
@@ -477,28 +478,30 @@ end
 
           <section>
             <pre>
-<code class="ruby">require 'qor_dsl'
-
-class SimpleWeb
+<code class="ruby">class SimpleWeb
   class Configuration
     include Qor::Dsl
     node :get
   end
 
-  class Base
+  class Request
     attr_accessor :env
 
     def initialize env
       self.env = env
     end
 
+    def body
+      instance_eval(&SimpleWeb::Configuration.first(:get, env["PATH_INFO"]).block)
+    end
+
     def call
-      [200, {'Content-Type' => 'text'}, [instance_eval(&SimpleWeb::Configuration.first(:get, env["PATH_INFO"]).block)]]
+      [200, {'Content-Type' => 'text'}, [body]]
     end
   end
 end
 
-run proc { |env| SimpleWeb::Base.new(env).call }
+run proc { |env| SimpleWeb::Request.new(env).call }
 </code>
             </pre>
           </section>
@@ -535,7 +538,7 @@ end
           <section>
             <pre>
 <code class="ruby">class SimpleWeb
-  class Base
+  class Request
     attr_accessor :env
 
     def initialize env
@@ -559,7 +562,7 @@ end
   end
 end
 
-run proc { |env| SimpleWeb::Base.new(env).call }
+run proc { |env| SimpleWeb::Request.new(env).call }
 </code>
             </pre>
           </section>
